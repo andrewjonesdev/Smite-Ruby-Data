@@ -1,10 +1,14 @@
 require 'open-uri'
 require 'nokogiri'
 
-url = 'http://esports.smitegame.com/s4-spring-split-landing-page/'
+OpenURI::Buffer.send :remove_const, 'StringMax' if OpenURI::Buffer.const_defined?('StringMax')
+OpenURI::Buffer.const_set 'StringMax', 0
+#OpenURI::Buffer::StringMax = 0
+
+url = 'http://esports.smitegame.com/s4-fall-split-landing-page/'
 page = Nokogiri::HTML(open(url))
 
-page.css('.overview-wrapper td').each do |line|
+page.css('.overview-wrapper td')[0, 80].each do |line|
   puts line.text
 end
 
@@ -15,6 +19,9 @@ end
 page.css('.overview-wrapper td a').map do |link|
   puts link['href']
   urlTeam =link['href']
+  if urlTeam == nil
+    break
+  else
   pageTeam = Nokogiri::HTML(open(urlTeam))
   pageTeam.css('div.player-card').each do |captain|
     captain.to_s.include?("captain-icon ion-star") ? (puts "true") : (puts "false")
@@ -63,7 +70,7 @@ page.css('.overview-wrapper td a').map do |link|
     end
   end
 end
-
+end
 
 #urlTeam = 'http://esports.smitegame.com/team/spacestation-gaming/'
 #pageTeam = Nokogiri::HTML(open(urlTeam))
